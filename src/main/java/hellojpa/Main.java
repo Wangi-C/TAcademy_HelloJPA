@@ -3,10 +3,7 @@ package hellojpa;
 import hellojpa.entity.Member;
 import hellojpa.entity.Team;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import javax.persistence.*;
 import java.util.List;
 
 public class Main {
@@ -32,22 +29,54 @@ public class Main {
             member.setTeam(team);
             em.persist(member);
 
+//            team.getMembers().add(member);
+
+//            em.flush();
+//            em.clear();
+
+            // member 조회
+//            Member findMember = em.find(Member.class, member.getId());
+//            Team findTeam = findMember.getTeam();
+//
+//            List<Member> members = findTeam.getMembers();
+//            for (Member m : members) {
+//                System.out.println("m = " + m);
+//            }
+            Member memberA = new Member();
+            memberA.setName("A");
+            memberA.setMemberType(MemberType.USER);
+            memberA.setAge(12);
+            em.persist(memberA);
+
+            Member memberB = new Member();
+            memberB.setName("B");
+            memberB.setMemberType(MemberType.ADMIN);
+            memberB.setAge(13);
+            memberB.setTeam(team);
+            em.persist(memberB);
+
+            Thread.sleep(3000);
+
+            TypedQuery<Member> query = em.createQuery("select m from Member m", Member.class);
+            List<Member> members = query.getResultList();
+
             em.flush();
             em.clear();
 
-            // member 조회
-            Member findMember = em.find(Member.class, member.getId());
-            Team findTeam = findMember.getTeam();
+            Member findMember = em.find(Member.class, memberB.getId());
 
-            List<Member> members = findTeam.getMembers();
-            for (Member m : members) {
-                System.out.println("m = " + m);
-            }
+            em.close();
 
-            transaction.commit();
+            Team teamB = findMember.getTeam();
+            System.out.println("teamB = " + teamB);
 
-            System.out.println(findTeam.getId());
-            System.out.println(findTeam.getName());
+//            em.flush();
+//            em.clear();
+//
+//            transaction.commit();
+
+//            System.out.println(findTeam.getId());
+//            System.out.println(findTeam.getName());
         } catch (Exception e) {
             e.printStackTrace();
             transaction.rollback();
