@@ -34,7 +34,7 @@ public class Main {
             em.flush();
             em.clear();
 
-            Thread.sleep(3000);
+//            Thread.sleep(3000);
 
             // member 조회
             Member findMember = em.find(Member.class, member.getId());
@@ -47,13 +47,13 @@ public class Main {
 //            }
 
             Member memberA = new Member();
-            memberA.setName("A");
+            memberA.setName("WanWan");
             memberA.setMemberType(MemberType.USER);
             memberA.setAge(12);
             em.persist(memberA);
 
             Member memberB = new Member();
-            memberB.setName("B");
+            memberB.setName("Wangi");
             memberB.setMemberType(MemberType.ADMIN);
             memberB.setAge(13);
             memberB.setTeam(team);
@@ -88,6 +88,50 @@ public class Main {
 //
 ////            System.out.println(findTeam.getId());
 ////            System.out.println(findTeam.getName());
+
+            /**fetch Join**/
+            // fetch 사용전
+            // 실행 sql :
+            /* select
+                    m
+                from
+                    Member m
+                where
+                    m.name like '%Wan%' */
+            System.out.println("fetch Join 실습");
+            String jpqlFetchbefore = "select m from Member m where m.name like '%Wan%'";
+            List<Member> jpqlFindMember = em.createQuery(jpqlFetchbefore, Member.class).getResultList();
+
+            // fetch Join 사용
+            // 실행 sql :
+            /*
+            * select
+                    member0_.id as id1_0_0_,
+                    team1_.id as id1_2_1_,
+                    member0_.age as age2_0_0_,
+                    member0_.memberType as memberTy3_0_0_,
+                    member0_.USERNAME as USERNAME4_0_0_,
+                    member0_.TEAM_ID as TEAM_ID5_0_0_,
+                    team1_.name as name2_2_1_
+                from
+                    Member member0_
+                inner join
+                    Team team1_
+                        on member0_.TEAM_ID=team1_.id
+                where
+                    member0_.USERNAME like '%Wan%'
+            * */
+            System.out.println("fetch Join 적용");
+            String jpqlFetchAfter = "select m from Member m join fetch m.team where m.name like '%Wan%'";
+            jpqlFindMember = em.createQuery(jpqlFetchAfter, Member.class)
+                    .setFirstResult(10)
+                    .setMaxResults(20)
+                    .getResultList();
+
+            for (Member m :
+                    jpqlFindMember) {
+                System.out.println("m = " + m);
+            }
 
             transaction.commit();
         } catch (Exception e) {
