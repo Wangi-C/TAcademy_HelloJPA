@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("test");
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("test");
 
         EntityManager em = emf.createEntityManager();
@@ -83,6 +84,14 @@ public class Main {
 //
             em.flush();
             em.clear();
+
+            Member findMember1 = em.find(Member.class, member.getId());
+
+//            em.close();
+
+            Team findMember1Team = findMember1.getTeam();
+            findMember1Team.getName();
+            System.out.println("findMember1Team = " + findMember1Team);
 ////
 ////            transaction.commit();
 //
@@ -131,6 +140,26 @@ public class Main {
             for (Member m :
                     jpqlFindMember) {
                 System.out.println("m = " + m);
+            }
+
+            /**JPQL & SQL**/
+            String jpql = "select m from Member m where m.name like '%Wan%'";
+            List<Member> memberList = em.createQuery(jpql, Member.class)
+                    .getResultList();
+
+            for (Member m :
+                    memberList) {
+                System.out.println("m = " + m);
+            }
+
+            //JPQL 페치조인
+            String jpqlFetch = "select m from Member m join fetch m.team";
+
+            List<Member> members1 = em.createQuery(jpqlFetch, Member.class).getResultList();
+            for (Member m :
+                    members1) {
+                System.out.println("m.getName() = " + m.getName() + ", "
+                        + "m.getTeam() = " + m.getTeam().getName());
             }
 
             transaction.commit();

@@ -9,14 +9,14 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-@ToString
+//@ToString
 public class Orders {
 
     @Id @GeneratedValue
     private Long id;
     private String item;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
